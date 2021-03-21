@@ -12,7 +12,7 @@ Installation
 Requirements
 ^^^^^^^^^^^^
 
-* `ROS2 <https://index.ros.org/doc/ros2//>`_ : Please use the version ``dashing`` or later.
+* `ROS2 <https://index.ros.org/doc/ros2//>`_ : ``foxy`` or later is recommended. (If you want to build it manually, you can use ``dashing`` or later.)
 
 * :ref:`OpenVSLAM <chapter-installation>` : Please build it with **OpenCV 3.x**.
 
@@ -43,15 +43,16 @@ Download repositories of ``image_common`` and ``vision_opencv``.
 
 .. code-block:: bash
 
-    cd /path/to/openvslam/ros/2/src
-    git clone -b dashing --single-branch https://github.com/ros-perception/image_common.git
+    midir -p ~/ros2_ws/src
+    cd ~/ros2_ws/src
+    git clone -b ${ROS_DISTRO} --single-branch https://github.com/ros-perception/image_common.git
     git clone -b ros2 --single-branch https://github.com/ros-perception/vision_opencv.git
 
 For using USB cam as a image source, donload a repository of ``demos`` and pick ``image_tools`` module.
 
 .. code-block:: bash
 
-    cd /path/to/openvslam/ros/2
+    cd ~/ros2_ws
     git clone https://github.com/ros2/demos.git
     cp -r demos/image_tools src/
     rm -rf demos
@@ -59,14 +60,15 @@ For using USB cam as a image source, donload a repository of ``demos`` and pick 
 Build Instructions
 ^^^^^^^^^^^^^^^^^^
 
-When building with support for PangolinViewer, you have not specify any arguments.
+When building with support for PangolinViewer, please specify the following cmake options: ``-DUSE_PANGOLIN_VIEWER=ON`` and ``-DUSE_SOCKET_PUBLISHER=OFF`` as described in :ref:`build of OpenVSLAM <section-build-unix>`.
+openvslam and openvslam_ros need to be built with the same options.
 
 .. code-block:: bash
 
-    cd /path/to/openvslam/ros/2
-    colcon buld --symlink-install
-
-The SocketViewer is not available right now. We will provide this feature soon.
+    cd ~/catkin_ws/src
+    git clone --branch ros2 --depth 1 https://github.com/OpenVSLAM-Community/openvslam_ros.git
+    cd ~/ros2_ws
+    colcon build --symlink-install --cmake-args -DUSE_PANGOLIN_VIEWER=ON -DUSE_SOCKET_PUBLISHER=OFF
 
 Examples
 ========
@@ -74,29 +76,7 @@ Examples
 Publisher
 ^^^^^^^^^
 
-Publishers continually broadcast images as a ROS topic.
-Please execute one of the following command snippets in the new terminal.
-
-Publish a Video File
---------------------
-
-For using video files (e.g. ``.mp4``) for visual SLAM or localization.
-
-.. code-block:: bash
-
-    source /path/to/openvslam/ros/2/install/setup.bash
-    ros2 run publisher video -m /path/to/video.mp4
-
-
-Publish a Image Sequence
-------------------------
-
-For using image sequences for visual SLAM or localization.
-
-.. code-block:: bash
-
-    source /path/to/openvslam/ros/2/install/setup.bash
-    ros2 run publisher image -i /path/to/images/
+If you want to input image sequences or videos into openvslam_ros, please refer to `dataset_publisher_ros2 <https://github.com/mirellameelo/dataset_publisher_ros2>`_.
 
 Publish Images Captured by a USB Camera
 ------------------------------
@@ -128,12 +108,12 @@ Tracking and Mapping
 --------------------
 
 We provide an example snippet for visual SLAM.
-The source code is placed at ``./openvslam/ros/src/openvslam/src/run_slam.cc``.
+The source code is placed at ``openvslam_ros/src/run_slam.cc``.
 
 .. code-block:: bash
 
-    source /path/to/openvslam/ros/2/install/setup.bash
-    ros2 run openvslam run_slam \
+    source ~/ros2_ws/install/setup.bash
+    ros2 run openvslam_ros run_slam \
         -v /path/to/orb_vocab.dbow2 \
         -c /path/to/config.yaml
 
@@ -141,12 +121,12 @@ Localization
 ------------
 
 We provide an example snippet for localization based on a prebuilt map.
-The source code is placed at ``./ros/src/openvslam/src/run_localization.cc``.
+The source code is placed at ``openvslam_ros/src/run_localization.cc``.
 
 .. code-block:: bash
 
-    source /path/to/openvslam/ros/2/install/setup.bash
-    ros2 run openvslam run_localization \
+    source ~/ros2_ws/install/setup.bash
+    ros2 run openvslam_ros run_localization \
         -v /path/to/orb_vocab.dbow2 \
         -c /path/to/config.yaml \
         --map-db /path/to/map.msg

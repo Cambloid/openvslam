@@ -6,7 +6,6 @@
 [![Wercker Status](https://app.wercker.com/status/402b9e7a1fae92493519fff03d513565/s/main "wercker status")](https://app.wercker.com/ymd-stella/openvslam/runs)
 [![Documentation Status](https://readthedocs.org/projects/openvslam-community/badge/?version=latest)](https://openvslam-community.readthedocs.io/en/latest/?badge=latest)
 [![License](https://img.shields.io/badge/License-BSD%202--Clause-orange.svg)](https://opensource.org/licenses/BSD-2-Clause)
-[![Join the community on Spectrum](https://withspectrum.github.io/badge/badge.svg)](https://spectrum.chat/openvslam)
 
 ---
 
@@ -40,7 +39,7 @@ You can employ these snippets for in your own programs.
 Please see the `*.cc` files in `./example` directory or check [Simple Tutorial](https://openvslam-community.readthedocs.io/en/latest/simple_tutorial.html) and [Example](https://openvslam-community.readthedocs.io/en/latest/example.html).
 
 We provided [documentation](https://openvslam-community.readthedocs.io/) for installation and tutorial.
-Please contact us via [GitHub issues](https://github.com/OpenVSLAM-Community/openvslam/issues) if you have any questions or notice any bugs about the software.
+The repository for the ROS wrapper is [openvslam_ros](https://github.com/OpenVSLAM-Community/openvslam_ros).
 
 ## Motivation
 
@@ -58,16 +57,14 @@ Please see [**Installation**](https://openvslam-community.readthedocs.io/en/late
 
 Please see [**Simple Tutorial**](https://openvslam-community.readthedocs.io/en/latest/simple_tutorial.html) chapter in the [documentation](https://openvslam-community.readthedocs.io/).
 
-A sample ORB vocabulary file can be downloaded from [here](https://drive.google.com/open?id=1wUPb328th8bUqhOk-i8xllt5mgRW4n84).
+A sample ORB vocabulary file can be downloaded from [here](https://github.com/OpenVSLAM-Community/DBoW2_orb_vocab/raw/main/orb_vocab.dbow2).
 Sample datasets are also provided at [here](https://drive.google.com/open?id=1A_gq8LYuENePhNHsuscLZQPhbJJwzAq4).
 
 If you would like to run visual SLAM with standard benchmarking datasets (e.g. KITTI Odometry dataset), please see [**SLAM with standard datasets**](https://openvslam-community.readthedocs.io/en/latest/example.html#slam-with-standard-datasets) section in the [documentation](https://openvslam-community.readthedocs.io/).
 
 ## Community
 
-If you want to join our Spectrum community, please join from the following link:
-
-[![Join the community on Spectrum](https://withspectrum.github.io/badge/badge.svg)](https://spectrum.chat/openvslam)
+Please contact us via [GitHub Discussions](https://github.com/OpenVSLAM-Community/openvslam/discussions) if you have any questions or notice any bugs about the software.
 
 ## Currently working on
 

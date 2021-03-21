@@ -42,13 +42,13 @@ build_with_gui:
       code: |
         mkdir build
         cd build
-        cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=ON -DUSE_PANGOLIN_VIEWER=ON -DUSE_STACK_TRACE_LOGGER=ON -DBOW_FRAMEWORK=DBoW2 -DBUILD_TESTS=ON ..
+        cmake -DCMAKE_BUILD_TYPE=None -DBUILD_EXAMPLES=ON -DUSE_PANGOLIN_VIEWER=ON -DUSE_STACK_TRACE_LOGGER=ON -DBOW_FRAMEWORK=DBoW2 -DBUILD_TESTS=ON ..
         make -j $(($(nproc) / 2))
     - script:
       name: cmake and make with socket publisher
       code: |
         cd build
-        cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=ON -DUSE_SOCKET_PUBLISHER=ON -DUSE_STACK_TRACE_LOGGER=ON -DBOW_FRAMEWORK=DBoW2 -DBUILD_TESTS=ON ..
+        cmake -DCMAKE_BUILD_TYPE=None -DBUILD_EXAMPLES=ON -DUSE_SOCKET_PUBLISHER=ON -DUSE_STACK_TRACE_LOGGER=ON -DBOW_FRAMEWORK=DBoW2 -DBUILD_TESTS=ON ..
         make -j $(($(nproc) / 2))
 
 build_without_gui:
@@ -64,7 +64,7 @@ build_without_gui:
       code: |
         mkdir build
         cd build
-        cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_EXAMPLES=ON -DUSE_STACK_TRACE_LOGGER=ON -DBOW_FRAMEWORK=DBoW2 -DBUILD_TESTS=ON -DUSE_SSE_ORB=ON ..
+        cmake -DCMAKE_BUILD_TYPE=None -DBUILD_EXAMPLES=ON -DUSE_STACK_TRACE_LOGGER=ON -DBOW_FRAMEWORK=DBoW2 -DBUILD_TESTS=ON -DUSE_SSE_ORB=ON ..
         make -j $(($(nproc) / 2))
     - script:
       name: unit test
@@ -103,7 +103,7 @@ build_without_gui_fbow:
       code: |
         mkdir build
         cd build
-        cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_EXAMPLES=ON -DUSE_STACK_TRACE_LOGGER=ON -DBOW_FRAMEWORK=FBoW -DBUILD_TESTS=ON -DUSE_SSE_ORB=ON ..
+        cmake -DCMAKE_BUILD_TYPE=None -DBUILD_EXAMPLES=ON -DUSE_STACK_TRACE_LOGGER=ON -DBOW_FRAMEWORK=FBoW -DBUILD_TESTS=ON -DUSE_SSE_ORB=ON ..
         make -j $(($(nproc) / 2))
     - script:
       name: unit test
@@ -129,6 +129,22 @@ build_without_gui_fbow:
         ./run_euroc_localization -v /datasets/orb_vocab/orb_vocab.fbow -d /datasets/EuRoC/MH_04 -c ../example/euroc/EuRoC_mono.yaml --frame-skip 2 --no-sleep --debug --eval-log --map-db euroc_mono.msg
         evo_rpe tum data.tum frame_trajectory.txt -as
 
+build_type_none:
+  steps:
+    - script:
+      name: setup ccache
+      code: |
+        export CCACHE_DIR=${WERCKER_CACHE_DIR}/.ccache
+        ccache -M 950M
+        ccache -s
+    - script:
+      name: cmake and make
+      code: |
+        mkdir build
+        cd build
+        cmake -DCMAKE_BUILD_TYPE=None ..
+        make -j $(($(nproc) / 2))
+
 build_tutorial:
   steps:
     - script:
@@ -142,7 +158,7 @@ build_tutorial:
       code: |
         mkdir build
         cd build
-        cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=ON -DUSE_STACK_TRACE_LOGGER=ON -DBOW_FRAMEWORK=DBoW2 -DBUILD_TESTS=ON -DUSE_OPENMP=OFF ..
+        cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_EXAMPLES=ON -DUSE_STACK_TRACE_LOGGER=ON -DBOW_FRAMEWORK=DBoW2 -DBUILD_TESTS=ON -DUSE_OPENMP=OFF ..
         make -j $(($(nproc) / 2))
     - script:
       name: download a dataset
@@ -165,83 +181,18 @@ build_tutorial:
         cd build
         ./run_video_localization -v /datasets/orb_vocab/orb_vocab.dbow2 -m ./video_for_ci_1/video.mp4 -c ./video_for_ci_1/config.yaml --frame-skip 3 --no-sleep --debug --eval-log --map-db map.msg
 
-build_ros:
-  box: ghcr.io/ymd-stella/openvslam-community/openvslam-ros:latest
+rosdep_foxy:
+  box: ghcr.io/ymd-stella/openvslam-community/ros:foxy-ros-base
   steps:
-    - script:
-      name: setup ccache
-      code: |
-        export CCACHE_DIR=${WERCKER_CACHE_DIR}/.ccache
-        ccache -M 950M
-        ccache -s
-    - script:
-      name: cmake and make and install
-      code: |
-        mkdir build
-        cd build
-        cmake -DCMAKE_BUILD_TYPE=Debug -DUSE_STACK_TRACE_LOGGER=ON -DBOW_FRAMEWORK=DBoW2 -DBUILD_TESTS=ON -DUSE_SSE_ORB=ON ..
-        make -j $(($(nproc) / 2))
-        make install
-    - script:
-      name: build ros packages
-      code: |
-        cd ros/1
-        catkin_make -j$(($(nproc) / 2)) -DUSE_STACK_TRACE_LOGGER=ON -DBOW_FRAMEWORK=DBoW2
-    - script:
-      name: run run_slam
-      code: |
-        source ros/1/devel/setup.bash
-        roscore&
-        rosrun openvslam run_slam -v /datasets/orb_vocab/orb_vocab.dbow2 -c example/euroc/EuRoC_mono.yaml --map-db map.msg /camera/image_raw:=/cam0/image_raw&
-        rosbag play /datasets/EuRoC/MH_04_difficult.bag
-        pkill -SIGINT -f run_slam
-        pkill -SIGINT roscore
-    - script:
-      name: run run_localization
-      code: |
-        source ros/1/devel/setup.bash
-        roscore&
-        rosrun openvslam run_localization -v /datasets/orb_vocab/orb_vocab.dbow2 -c example/euroc/EuRoC_mono.yaml --map-db map.msg /camera/image_raw:=/cam0/image_raw&
-        sleep 5
-        rosbag play /datasets/EuRoC/MH_04_difficult.bag
-        pkill -SIGINT -f run_localization
-        pkill -SIGINT roscore
-
-build_ros2:
-  box: ghcr.io/ymd-stella/openvslam-community/openvslam-ros2:latest
-  steps:
-    - script:
-      name: setup ccache
-      code: |
-        export CCACHE_DIR=${WERCKER_CACHE_DIR}/.ccache
-        ccache -M 950M
-        ccache -s
-    - script:
-      name: cmake and make and install
-      code: |
-        mkdir build
-        cd build
-        CMAKE_PREFIX_PATH=/opt/ros/${ROS_DISTRO}/lib/cmake cmake -DCMAKE_BUILD_TYPE=Debug -DUSE_STACK_TRACE_LOGGER=ON -DBOW_FRAMEWORK=DBoW2 -DBUILD_TESTS=ON -DUSE_SSE_ORB=ON ..
-        make -j $(($(nproc) / 2))
-        make install
     - script:
       name: build ros2 packages
       code: |
-        cd ros/2
-        (source /opt/ros/${ROS2_DISTRO}/setup.bash && colcon build --parallel-workers $(($(nproc) / 2)) --cmake-args -DUSE_STACK_TRACE_LOGGER=ON -DBOW_FRAMEWORK=DBoW2)
-    - script:
-      name: run run_slam
-      code: |
-        (source /opt/ros/${ROS2_DISTRO}/setup.bash && source ros/2/install/setup.bash && ros2 run openvslam run_slam -v /datasets/orb_vocab/orb_vocab.dbow2 -c example/euroc/EuRoC_mono.yaml --map-db map.msg --ros-args -r /camera/image_raw:=/cam0/image_raw)&
-        (source /opt/ros/${ROS1_DISTRO}/setup.bash && source /opt/ros/${ROS2_DISTRO}/setup.bash && ros2 bag play -s rosbag_v2 /datasets/EuRoC/MH_04_difficult.bag)
-        sleep 1
-        echo "pkill -SIGINT -f run_slam"
-        pkill -SIGINT -f run_slam
-        sleep 10
-    - script:
-      name: run run_localization
-      code: |
-        (source /opt/ros/${ROS2_DISTRO}/setup.bash && source ros/2/install/setup.bash && ros2 run openvslam run_localization -v /datasets/orb_vocab/orb_vocab.dbow2 -c example/euroc/EuRoC_mono.yaml --map-db map.msg --ros-args -r /camera/image_raw:=/cam0/image_raw)&
-        sleep 5
-        (source /opt/ros/${ROS1_DISTRO}/setup.bash && source /opt/ros/${ROS2_DISTRO}/setup.bash && ros2 bag play -s rosbag_v2 /datasets/EuRoC/MH_04_difficult.bag)
-        pkill -SIGINT -f run_localization
+        mkdir -p ../ros_ws/src
+        cp -r . ../ros_ws/src/openvslam
+        cd ../ros_ws/src/openvslam
+        git submodule update -i --recursive
+        cd ../..
+        apt update
+        rosdep install -y -i --from-paths src
+        export MAKEFLAGS="-j $(($(nproc) / 2))"
+        (source /opt/ros/${ROS_DISTRO}/setup.bash && colcon build --parallel-workers 1)

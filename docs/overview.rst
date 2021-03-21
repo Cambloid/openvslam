@@ -8,7 +8,7 @@ Overview
     :width: 640px
     :align: center
 
-.. image:: https://raw.githubusercontent.com/wiki/xdspacelab/openvslam/media/tracking.gif
+.. image:: https://raw.githubusercontent.com/wiki/OpenVSLAM-Community/openvslam/media/tracking.gif
     :width: 640px
     :align: center
 
@@ -32,7 +32,7 @@ Please see the ``*.cc`` files in ``./example`` directory or check  :ref:`Simple 
 Also, some examples to run OpenVSLAM on ROS framework are provided.
 Please check :ref:`ROS Package <chapter-ros-package>`.
 
-Please contact us via `GitHub issues <https://github.com/xdspacelab/openvslam/issues>`__ if you have any questions or notice any bugs about the software.
+Please contact us via `GitHub issues <https://github.com/OpenVSLAM-Community/openvslam/issues>`__ if you have any questions or notice any bugs about the software.
 
 .. _section-overview-installation:
 
@@ -50,7 +50,7 @@ Tutorial
 
 Please see :ref:`Simple Tutorial <chapter-simple-tutorial>`.
 
-| A sample ORB vocabulary file can be downloaded from `here <https://drive.google.com/open?id=1wUPb328th8bUqhOk-i8xllt5mgRW4n84>`__.
+| A sample ORB vocabulary file can be downloaded from `here <https://github.com/OpenVSLAM-Community/DBoW2_orb_vocab/raw/main/orb_vocab.dbow2>`__.
 | Sample datasets are also provided at `here <https://drive.google.com/open?id=1A_gq8LYuENePhNHsuscLZQPhbJJwzAq4>`__. 
 
 If you would like to run visual SLAM with standard benchmarking datasets (e.g. KITTI Odometry dataset), please see :ref:`SLAM with standard datasets <section-example-standard-datasets>`.
